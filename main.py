@@ -9,7 +9,7 @@ from shot import Shot
 def main():
     pygame.init()
     clock = pygame.time.Clock()
-    dt = 0
+    dt = 0 # Delta time
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
     updatable_group = pygame.sprite.Group()
@@ -28,11 +28,17 @@ def main():
             if event.type == pygame.QUIT:
                 return
         for updatable_obj in updatable_group:
+            if updatable_obj == player:
+                player.shoot_cooldown -= dt
             updatable_obj.update(dt)
         for asteroid in asteroids_group:
             if player.collides_with(asteroid):
                 print("Game over!")
                 sys.exit()
+            for shot in shots_group:
+                if shot.collides_with(asteroid):
+                    asteroid.split()
+                    shot.kill()
         screen.fill((0, 0, 0))
         for drawable_obj in drawable_group:
             drawable_obj.draw(screen)
